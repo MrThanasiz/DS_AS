@@ -1,0 +1,5 @@
+.idea/
+Client/__pycache__/
+ServerInstance/__pycache__/
+ServerInstance/songs/
+venv/
