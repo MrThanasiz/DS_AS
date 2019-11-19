@@ -1,3 +1,4 @@
+import os
 import time
 import SMTPClient
 
@@ -18,16 +19,29 @@ class responceProcessor:
             SMTPClient.NWSThreadedClient(self.nextServer[0], self.nextServer[1]).run()
         elif self.state == "keyExchange":
             module.securityClient.messageRouter(message, module)
-
         elif self.state == "status" and message.decode().startswith("EP"):
             self.state = "keyExchange"
             module.create_message("init".encode())
 
+        elif self.state == "songTransfer":
+            try:
+                if message.decode() == "STOVER":
+                    os.startfile("song.wav")
+                    self.state = "default"
+            except UnicodeDecodeError:
+                pass
+            f = open("song.wav", "ab")
+            f.write(message)
+            f.close()
+
         else:
             contents = module.securityClient.decryptData(message)
             try:
-                print(contents.decode())
+                if contents.decode() == "STINIT":
+                    if os.path.exists("song.wav"):
+                        os.remove("song.wav")
+                    self.state = "songTransfer"
+                else:
+                    print(contents.decode())
             except UnicodeDecodeError:
                 print(message)
-
-

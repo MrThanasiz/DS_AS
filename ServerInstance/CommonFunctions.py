@@ -1,3 +1,4 @@
+import time
 import SecurityServer
 
 def numberOfWords(string):
@@ -54,4 +55,13 @@ def decryptData(data, SecurityServer):
     return SecurityServer.decryptData(data)
 
 def sendSong(songLoc, module, SecurityServer):
-    print("TODO")#TODO
+    sendData("STINIT", module, SecurityServer) # Song Transfer Init
+    time.sleep(0.2)
+    f = open(songLoc, 'rb')
+    l = f.read(1024)
+    while (l):
+        module._send_data(l)
+        l = f.read(1024)
+    f.close()
+    time.sleep(0.3)
+    module._send_data("STOVER".encode())

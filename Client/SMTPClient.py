@@ -48,14 +48,13 @@ class NWSThreadedClient ():
             if self._module.responseProcessor.state == "closed":
                 print("Connection closed breaking loop.")
                 break
+
             userInput = input("Send a message:")
 
             if len(userInput) == 0:  # This is used to prevent sending an empty message
                 userInput = userInput + " "
 
             if self._module.responseProcessor.state == "status":
-                if userInput.upper() == "INIT":
-                    self._module.responseProcessor.state = "keyExchange"
                 message = userInput.encode()
             else:
                 message = self._module.securityClient.encryptData(userInput)

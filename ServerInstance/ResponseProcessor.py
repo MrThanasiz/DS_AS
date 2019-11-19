@@ -40,15 +40,13 @@ class responseProcessor:
             self.stateKeyExchange(dataDec, module)
         elif dataDec == "STYPE":
             CommonFunctions.sendDataKeyExchange("EP", module)
-        elif dataDec == "LOAD":
-            CommonFunctions.sendDataKeyExchange("WiP", module) #TODO this how?
         else:
-            CommonFunctions.sendDataKeyExchange("Commands: INIT, STYPE, LOAD", module)
+            CommonFunctions.sendDataKeyExchange("Commands: INIT, STYPE", module)
 
     def stateKeyExchange(self, dataDec, module):
         self.transferKey, completed = (self.securityServer.initiateKeyExchangeServer(dataDec, module))
         if completed:
-            self.state = "default" #TODO CHANGE BACK TO LOGIN AFTER TESTING!!!
+            self.state = "login"
             print(str(self.transferKey))
 
     def stateLogin(self, dataDec, module):
@@ -122,7 +120,7 @@ class responseProcessor:
     def commandSONGLIST(self, module):
         for song in self.songRegistry:
             CommonFunctions.sendData(song[1], module, self.securityServer)
-            time.sleep(0.05) #????
+            time.sleep(0.05) #todo??
 
     def commandDOWNSONG(self, argument, module):
         try:
@@ -131,10 +129,10 @@ class responseProcessor:
             CommonFunctions.sendData("Song ID can only be an Integer.", module, self.securityServer)
         else:
             songloc = Storage.getSongLoc(self.songRegistry, songid)
-            if contents == "IDERROR":
+            if songloc == "IDERROR":
                 CommonFunctions.sendData("Song ID does not exist.", module, self.securityServer)
             else:
-                CommonFunctions.sendSong(songloc, module, SecurityServer)
+                CommonFunctions.sendSong(songloc, module, self.securityServer)
 
     def commandHELP(self, argument, module):
         argument = argument.upper()
