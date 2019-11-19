@@ -1,6 +1,6 @@
 
 
-# Distributed System Implementation
+# Music Client / Server Distributed Implementation
 
 This program was created to as part of the Distributed Systems class at University of Derby.
 Its a Client - Load Balancer - Client implementation of a very basic form of a music playing app. Allowing the user to make an account, view and play songs found on the server.
