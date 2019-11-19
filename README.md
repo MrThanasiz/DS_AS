@@ -23,7 +23,7 @@ The program can run on any OS, however testing was mostly done in Windows, so th
 2. Extract the folders from the zip files.
 3. Modify host & port values in DSClient.py & DSLoadBalancer.py as required (by default they're set to run on localhost and port 9999)
 4. Make sure Load balancer & Server Instance folders are in the same directory.
-5. Run DSServer.py on the server machine & DSClient.py on the client machine.
+5. Run DSServerLB.py on the server machine & DSClient.py on the client machine.
 
 
 ## Built With
