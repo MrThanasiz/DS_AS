@@ -120,7 +120,7 @@ class responseProcessor:
     def commandSONGLIST(self, module):
         for song in self.songRegistry:
             CommonFunctions.sendData(song[1], module, self.securityServer)
-            time.sleep(0.05) #todo??
+            time.sleep(0.03) #todo change??
 
     def commandDOWNSONG(self, argument, module):
         try:

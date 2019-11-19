@@ -71,7 +71,7 @@ def setServer(ip, port, count, path):
 
 def createCMD(addr, port, serverInstancePath):
     file = open(serverInstancePath + "startServer.cmd","w+")
-    file.write("python SMTPServer.py" + " " + addr + " " + str(port) +"\npause")
+    file.write("python DSServer.py" + " " + addr + " " + str(port) +"\npause")
     file.close()
 
 def runCMD(serverInstancePath):

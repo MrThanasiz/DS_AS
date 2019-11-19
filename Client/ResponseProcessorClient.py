@@ -1,6 +1,6 @@
 import os
 import time
-import SMTPClient
+import DSClient
 
 class responceProcessor:
     def __init__(self):
@@ -16,7 +16,7 @@ class responceProcessor:
             print("Next Server: " + str(self.nextServer))
             module.close()
             self.state = "closed"
-            SMTPClient.NWSThreadedClient(self.nextServer[0], self.nextServer[1]).run()
+            DSClient.DSThreadedClient(self.nextServer[0], self.nextServer[1]).run()
         elif self.state == "keyExchange":
             module.securityClient.messageRouter(message, module)
         elif self.state == "status" and message.decode().startswith("EP"):

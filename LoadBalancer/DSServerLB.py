@@ -3,17 +3,19 @@ __author__ = "Christopher Windmill, Brad Solomon"
 __version__ = "1.0.1"
 __status__ = "Development"
 
-import sys
 import socket
 import selectors
-import SMTPServerLib
+import DSServerLibLB
+import os
+import StorageLB
 
-
-class NWSThreadedServer ():
-    def __init__(self, host, port):
+class DSThreadedServer ():
+    def __init__(self, host="127.0.0.1", port=9999):
         if __debug__:
-            print("NWSThreadedServer.__init__", host, port)
+            print("DSThreadedServer.__init__", host, port)
 
+        StorageLB.resetServer("servers.txt")
+        
         # Network components
         self._host = host
         self._port = port
@@ -39,7 +41,7 @@ class NWSThreadedServer ():
         print("accepted connection from", addr)
 
         conn.setblocking(False)
-        module = SMTPServerLib.Module(conn, addr)
+        module = DSServerLibLB.Module(conn, addr)
         self._modules.append(module)
         module.start()
 
@@ -61,7 +63,5 @@ class NWSThreadedServer ():
 
 
 if __name__ == "__main__":
-    print('Number of arguments:', len(sys.argv), 'arguments.')
-    print('Argument List:', str(sys.argv))
-    server = NWSThreadedServer(sys.argv[1], int(sys.argv[2]))
+    server = DSThreadedServer()
     server.run()

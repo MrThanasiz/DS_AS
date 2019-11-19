@@ -6,16 +6,16 @@ __status__ = "Development"
 import time
 import socket
 import selectors
-import SMTPClientLib
+import DSClientLib
 import traceback
 
 LBhost = "127.0.0.1"
 LBport = 9999
 
-class NWSThreadedClient ():
+class DSThreadedClient ():
     def __init__(self, host, port):
         if __debug__:
-            print("NWSThreadedClient.__init__", host, port)
+            print("DSThreadedClient.__init__", host, port)
 
         # Network components
         self._host = host
@@ -33,7 +33,7 @@ class NWSThreadedClient ():
         sock.setblocking(False)
         sock.connect_ex(addr)
 
-        self._module = SMTPClientLib.Module(sock, addr)
+        self._module = DSClientLib.Module(sock, addr)
         self._module.start()
 
     def run(self):
@@ -65,5 +65,5 @@ class NWSThreadedClient ():
 
 
 if __name__ == "__main__":
-    client = NWSThreadedClient(LBhost, LBport)
+    client = DSThreadedClient(LBhost, LBport)
     client.run()
