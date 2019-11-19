@@ -19,7 +19,7 @@ The program can run on any OS, however testing was mostly done in Windows, so th
 
 ### Usage
 
-1. Download the latest Client, Load Balancer, Server Instance archives (.zip) from the [releases](https://github.com/MrThanasiz/NWS_AS/releases) tab.
+1. Download the latest Client, Load Balancer, Server Instance archives (.zip) from the [releases](https://github.com/MrThanasiz/DS_AS/releases) tab.
 2. Extract the folders from the zip files.
 3. Modify host & port values in DSClient.py & DSLoadBalancer.py as required (by default they're set to run on localhost and port 9999)
 4. Make sure Load balancer & Server Instance folders are in the same directory.
@@ -35,4 +35,4 @@ The program can run on any OS, however testing was mostly done in Windows, so th
 
 ## Versioning
 
-For the versions available, check the [Releases tab on the repository](https://github.com/MrThanasiz/NWS_AS/releases). 
+For the versions available, check the [Releases tab on the repository](https://github.com/MrThanasiz/DS_AS/releases). 
