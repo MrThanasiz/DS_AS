@@ -95,7 +95,7 @@ class responseProcessor:
         else:
             userPass = CommonFunctions.secondWord(argument)
             hashedPassword, salt = SecurityServer.hashPW(userPass)
-            tuser = Storage.accountUser(userName, hashedPassword, salt, ["",""])
+            tuser = Storage.accountUser(userName, hashedPassword, salt)
             Storage.accountAdd(self.accountUserRegistry, tuser)
             Storage.accountsSave(self.accountUserRegistry, "User")
             CommonFunctions.sendData("Account Registered Successfuly, Log in.", module, self.securityServer)
