@@ -3,10 +3,9 @@ import SecurityServer
 import Storage
 import time
 
-
 class responseProcessor:
     def __init__(self):
-        self.state = "keyExchange"
+        self.state = "status"
         self.transferKey = 0
         self.securityServer = SecurityServer.securityServer()
         self.accountUserRegistry = Storage.accountsLoad("User")
@@ -16,7 +15,11 @@ class responseProcessor:
 
     def commandRouter(self, dataEnc, module):
 
-        if self.state == "keyExchange":
+        if self.state == "status":
+            dataDec = dataEnc.decode()
+            self.stateStatus(dataDec, module)
+
+        elif self.state == "keyExchange":
             dataDec = dataEnc.decode()
             self.stateKeyExchange(dataDec, module)
 
@@ -28,7 +31,19 @@ class responseProcessor:
             dataDec = self.securityServer.decryptData(dataEnc).decode()
             self.stateDefault(dataDec, module)
         else:
-            CommonFunctions.sendData("Command couldn't be routed state unknown", module, self.securityServer)
+            CommonFunctions.sendData("Command couldn't be routed " + self.state + " state unknown", module, self.securityServer)
+
+    def stateStatus(self, dataDec, module):
+        dataDec = dataDec.upper()
+        if dataDec == "INIT":
+            self.state = "keyExchange"
+            self.stateKeyExchange(dataDec, module)
+        elif dataDec == "STYPE":
+            CommonFunctions.sendDataKeyExchange("EP", module)
+        elif dataDec == "LOAD":
+            CommonFunctions.sendDataKeyExchange("WiP", module) #TODO this how?
+        else:
+            CommonFunctions.sendDataKeyExchange("Commands: INIT, STYPE, LOAD", module)
 
     def stateKeyExchange(self, dataDec, module):
         self.transferKey, completed = (self.securityServer.initiateKeyExchangeServer(dataDec, module))
@@ -107,7 +122,7 @@ class responseProcessor:
     def commandSONGLIST(self, module):
         for song in self.songRegistry:
             CommonFunctions.sendData(song[1], module, self.securityServer)
-            time.sleep(0.05) #TODO ASK Chris help with this???
+            time.sleep(0.05) #????
 
     def commandDOWNSONG(self, argument, module):
         try:
@@ -122,6 +137,7 @@ class responseProcessor:
                 CommonFunctions.sendSong(songloc, module, SecurityServer)
 
     def commandHELP(self, argument, module):
+        argument = argument.upper()
         if argument == "-":
             data = "For more information on a specific command, type HELP command \n" \
                     "LOGOUT          The Logout command logs out the current user. \n" \

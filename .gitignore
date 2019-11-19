@@ -3,3 +3,4 @@ Client/__pycache__/
 ServerInstance/__pycache__/
 ServerInstance/songs/
 venv/
+LoadBalancer/__pycache__/

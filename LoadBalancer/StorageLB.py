@@ -1,3 +1,5 @@
+import os
+
 defaultServer = ["127.0.0.1", 10002, 0]
 
 def getServer(path):
@@ -66,21 +68,15 @@ def setServer(ip, port, count, path):
     setServerPort(port, path)
     setServerConnected(count, path)
 
-def rsetServer(path):
-    print("ok")#tODO
 
-def createCMD(addr, port, serverInstancePath): #TODO
+def createCMD(addr, port, serverInstancePath):
     file = open(serverInstancePath + "startServer.cmd","w+")
     file.write("python SMTPServer.py" + " " + addr + " " + str(port) +"\npause")
     file.close()
 
 def runCMD(serverInstancePath):
-    os.system("start " + serverInstancePath + "a.cmd")
+    os.system("cd "+ serverInstancePath + " & start startServer.cmd")
 
 def resetServer(path):
     server = getServer(path)
     setServer(defaultServer[0], defaultServer[1], defaultServer[2], path)
-
-serverPath = "servers.txt"
-srvr = getServer(serverPath)
-print(srvr)

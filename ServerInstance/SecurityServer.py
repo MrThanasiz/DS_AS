@@ -19,6 +19,9 @@ class securityServer:
         self.cipher = blowfish.Cipher("Hello World".encode())
 
     def initiateKeyExchangeServer(self, data, module):
+
+        print("initiated key exchange with client")
+
         A = self.g ^ self.a % self.p
         if self.state == 0 and data.upper() == "INIT":
             message = "Diffie-Hellman Exchange Initiated, sending in the following order" \

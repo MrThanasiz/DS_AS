@@ -1,40 +1,31 @@
-import sys
 import selectors
 import queue
-import json
-import io
-import struct
 import traceback
-import ResponseProcessorClient
-import SecurityClient
-
+import ResponseProcessorLB
 from threading import Thread
 
-class Module (Thread):
+
+class Module(Thread):
     def __init__(self, sock, addr):
         Thread.__init__(self)
 
         self._selector = selectors.DefaultSelector()
         self._sock = sock
         self._addr = addr
+
         self._incoming_buffer = queue.Queue()
         self._outgoing_buffer = queue.Queue()
 
-        self.securityClient = SecurityClient.securityClient()
-
-        self.responseProcessor = ResponseProcessorClient.responceProcessor()
+        self.responseProcessor = ResponseProcessorLB.responseProcessor()
 
         events = selectors.EVENT_READ | selectors.EVENT_WRITE
         self._selector.register(self._sock, events, data=None)
 
-
-
     def run(self):
         try:
             while True:
-                events = self._selector.select(timeout=1)
+                events = self._selector.select(timeout=None)
                 for key, mask in events:
-                    message = key.data
                     try:
                         if mask & selectors.EVENT_READ:
                             self._read()
@@ -46,9 +37,10 @@ class Module (Thread):
                             f"{self._addr}:\n{traceback.format_exc()}",
                         )
                         self._sock.close()
-                # Check for a socket being monitored to continue.
                 if not self._selector.get_map():
                     break
+        except KeyboardInterrupt:
+            print("caught keyboard interrupt, exiting")
         finally:
             self._selector.close()
 
@@ -56,6 +48,7 @@ class Module (Thread):
         try:
             data = self._sock.recv(8192)
         except BlockingIOError:
+            print("blocked")
             # Resource temporarily unavailable (errno EWOULDBLOCK)
             pass
         else:
@@ -73,24 +66,23 @@ class Module (Thread):
             message = None
 
         if message:
-            try:
-                print("message", str(self.securityClient.decryptData(message).decode()),
-                      "sending", repr(message), "to", self._addr, "State: " + self.responseProcessor.state)
-            except UnicodeDecodeError:
-                print("sending", repr(message), "to", self._addr, "StatePre: " + self.responseProcessor.state)
+            print("sending ", repr(message), "to", self._addr, "Response Processor State:", self.responseProcessor.state)
+
             try:
                 sent = self._sock.send(message)
             except BlockingIOError:
                 # Resource temporarily unavailable (errno EWOULDBLOCK)
                 pass
 
-    def create_message(self, data):
+    def _send_data(self, data):
         self._outgoing_buffer.put(data)
 
-
     def _process_response(self):
-        message = self._incoming_buffer.get()
-        self.responseProcessor.messageRouter(message, self)
+        data = self._incoming_buffer.get()
+        self._module_processor(data)
+
+    def _module_processor(self, data):
+        self.responseProcessor.commandRouter(data, self)
 
     def close(self):
         print("closing connection to", self._addr)
@@ -111,5 +103,4 @@ class Module (Thread):
         finally:
             # Delete reference to socket object for garbage collection
             self._sock = None
-
 

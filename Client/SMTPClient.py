@@ -9,9 +9,11 @@ import selectors
 import SMTPClientLib
 import traceback
 
+LBhost = "127.0.0.1"
+LBport = 9999
 
 class NWSThreadedClient ():
-    def __init__(self, host="127.0.0.1", port=9999):
+    def __init__(self, host, port):
         if __debug__:
             print("NWSThreadedClient.__init__", host, port)
 
@@ -37,22 +39,32 @@ class NWSThreadedClient ():
     def run(self):
         self.start_connection(self._host, self._port)
 
-        if self._module.responseProcessor.state == "keyExchange":
-            self._module.create_message("init".encode())
-
+        if self._module.responseProcessor.state == "status":
+            self._module.create_message("stype".encode())
+        # ^^ if state status is not to be used switch to this
         time.sleep(0.2)
 
         while True:
+            if self._module.responseProcessor.state == "closed":
+                print("Connection closed breaking loop.")
+                break
             userInput = input("Send a message:")
 
             if len(userInput) == 0:  # This is used to prevent sending an empty message
                 userInput = userInput + " "
 
-            message = self._module.securityClient.encryptData(userInput)
+            if self._module.responseProcessor.state == "status":
+                if userInput.upper() == "INIT":
+                    self._module.responseProcessor.state = "keyExchange"
+                message = userInput.encode()
+            else:
+                message = self._module.securityClient.encryptData(userInput)
+
             self._module.create_message(message)
+
             time.sleep(0.1)
 
 
 if __name__ == "__main__":
-    client = NWSThreadedClient()
+    client = NWSThreadedClient(LBhost, LBport)
     client.run()
