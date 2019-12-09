@@ -13,7 +13,7 @@ class responseProcessor:
         print("FILES LOADED")
         self.currentUser = []
 
-    def commandRouter(self, dataEnc, module):
+    def commandRouter(self, dataEnc, module): # Routes commands to functions that handle the corresponding states.
 
         if self.state == "status":
             dataDec = dataEnc.decode()
@@ -33,7 +33,7 @@ class responseProcessor:
         else:
             CommonFunctions.sendData("Command couldn't be routed " + self.state + " state unknown", module, self.securityServer)
 
-    def stateStatus(self, dataDec, module):
+    def stateStatus(self, dataDec, module): # Handles commands while in the Status state.
         dataDec = dataDec.upper()
         if dataDec == "INIT":
             self.state = "keyExchange"
@@ -43,13 +43,13 @@ class responseProcessor:
         else:
             CommonFunctions.sendDataKeyExchange("Commands: INIT, STYPE", module)
 
-    def stateKeyExchange(self, dataDec, module):
+    def stateKeyExchange(self, dataDec, module):  # Handles commands while in the KeyExchainge State.
         self.transferKey, completed = (self.securityServer.initiateKeyExchangeServer(dataDec, module))
         if completed:
             self.state = "login"
             print(str(self.transferKey))
 
-    def stateLogin(self, dataDec, module):
+    def stateLogin(self, dataDec, module):  # Handles commands while in the Login state.
         command = CommonFunctions.commandOnly(dataDec).upper()
         argument = CommonFunctions.argumentOnly(dataDec)
         if (command == "REGISTER" or command == "LOGIN") and CommonFunctions.numberOfWords(argument) == 2:
@@ -69,7 +69,7 @@ class responseProcessor:
                          "register <username> <password>", module, self.securityServer)
 
 
-    def stateDefault(self, dataDec, module):
+    def stateDefault(self, dataDec, module):  # Handles commands while in the Default state.
 
         command = CommonFunctions.commandOnly(dataDec)
         argument = CommonFunctions.argumentOnly(dataDec)

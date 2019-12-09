@@ -26,6 +26,10 @@ class responseProcessor:
         else:
             sendData("Command couldn't be routed " + self.state + " state unknown", module)
 
+# While in the status state the load balancer points the client connected to the next available server
+# and keeps track of the number of clients connected to it, when its more than 4 it creates a new server
+# and points incoming traffic to there.
+
     def stateStatus(self, dataDec, module):
         if dataDec.upper() == "STYPE":
 
